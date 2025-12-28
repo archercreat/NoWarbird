@@ -1,0 +1,19 @@
+{
+    "name": "remill-template",
+    "image": "ghcr.io/llvmparty/remill-template/dependencies:22.04-llvm19.1.7-remill6.0.0",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "llvm-vs-code-extensions.vscode-clangd",
+                "ms-vscode.cmake-tools",
+                "ms-vscode.cpptools",
+                "tamasfe.even-better-toml",
+                "sunshaoce.llvmir"
+            ]
+        }
+    },
+    "remoteEnv": {
+        "PATH": "${containerWorkspaceFolder}/build:${containerEnv:PATH}"
+    },
+    "postCreateCommand": "${containerWorkspaceFolder}/.devcontainer/post-create.sh"
+}

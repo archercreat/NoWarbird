@@ -1,0 +1,15 @@
+# Reference: https://build-cpp.github.io/cmkr/cmake-toml
+[project]
+name = "remill-template"
+
+[variables]
+CMAKE_MODULE_PATH = "${CMAKE_SOURCE_DIR}/cmake"
+GFLAGS_USE_TARGET_NAMESPACE = true
+
+[find-package.LLVM-Wrapper]
+[find-package.remill]
+
+[target.remill-example]
+type = "executable"
+sources = ["src/example.cpp"]
+link-libraries = ["::LLVM-Wrapper", "::remill"]
