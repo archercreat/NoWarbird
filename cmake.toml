@@ -1,6 +1,6 @@
 # Reference: https://build-cpp.github.io/cmkr/cmake-toml
 [project]
-name = "remill-template"
+name = "warbird-lifter"
 
 [variables]
 CMAKE_MODULE_PATH = "${CMAKE_SOURCE_DIR}/cmake"
@@ -8,8 +8,15 @@ GFLAGS_USE_TARGET_NAMESPACE = true
 
 [find-package.LLVM-Wrapper]
 [find-package.remill]
+[find-package.fmt]
 
-[target.remill-example]
+[target.warbird-lifter]
 type = "executable"
-sources = ["src/example.cpp"]
-link-libraries = ["::LLVM-Wrapper", "::remill"]
+compile-features = ["cxx_std_23"]
+sources = ["src/**.cpp"]
+headers = ["src/**.hpp"]
+private-compile-options = ["-Wno-invalid-offsetof"]
+private-include-directories = ["src/"]
+link-libraries = ["::LLVM-Wrapper", "::remill", "fmt"]
+
+[subdir.intrinsics]

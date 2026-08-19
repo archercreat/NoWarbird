@@ -28,38 +28,92 @@ endif()
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(GFLAGS_USE_TARGET_NAMESPACE ON)
 
-project(remill-template)
+project(warbird-lifter)
 
 # Packages
 find_package(LLVM-Wrapper REQUIRED)
 
 find_package(remill REQUIRED)
 
-# Target: remill-example
-set(remill-example_SOURCES
+find_package(fmt REQUIRED)
+
+# Subdirectory: intrinsics
+set(CMKR_CMAKE_FOLDER ${CMAKE_FOLDER})
+if(CMAKE_FOLDER)
+	set(CMAKE_FOLDER "${CMAKE_FOLDER}/intrinsics")
+else()
+	set(CMAKE_FOLDER intrinsics)
+endif()
+add_subdirectory(intrinsics)
+set(CMAKE_FOLDER ${CMKR_CMAKE_FOLDER})
+
+# Target: warbird-lifter
+set(warbird-lifter_SOURCES
 	cmake.toml
-	"src/example.cpp"
+	"src/handler.cpp"
+	"src/handler.hpp"
+	"src/lifter.cpp"
+	"src/lifter.hpp"
+	"src/logger.hpp"
+	"src/main.cpp"
+	"src/optimizer.cpp"
+	"src/optimizer.hpp"
+	"src/passes/InlinerPass.cpp"
+	"src/passes/InlinerPass.hpp"
+	"src/passes/InstCombineSpecificPass.cpp"
+	"src/passes/InstCombineSpecificPass.hpp"
+	"src/passes/MemoryConcretizationPass.cpp"
+	"src/passes/MemoryConcretizationPass.hpp"
+	"src/passes/MemoryDependenciesPass.cpp"
+	"src/passes/MemoryDependenciesPass.hpp"
+	"src/passes/MemoryRemoverPass.cpp"
+	"src/passes/MemoryRemoverPass.hpp"
+	"src/passes/StackLifterPass.cpp"
+	"src/passes/StackLifterPass.hpp"
+	"src/passes/StateRemoverPass.cpp"
+	"src/passes/StateRemoverPass.hpp"
+	"src/passes/UndefRemoverPass.cpp"
+	"src/passes/UndefRemoverPass.hpp"
+	"src/passes/VirtualStackLifterPass.cpp"
+	"src/passes/VirtualStackLifterPass.hpp"
+	"src/utils.cpp"
+	"src/utils.hpp"
+	"src/vm.cpp"
+	"src/vm.hpp"
 )
 
-add_executable(remill-example)
+add_executable(warbird-lifter)
 
-target_sources(remill-example PRIVATE ${remill-example_SOURCES})
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${remill-example_SOURCES})
+target_sources(warbird-lifter PRIVATE ${warbird-lifter_SOURCES})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${warbird-lifter_SOURCES})
+
+target_compile_features(warbird-lifter PRIVATE
+	cxx_std_23
+)
+
+target_compile_options(warbird-lifter PRIVATE
+	-Wno-invalid-offsetof
+)
+
+target_include_directories(warbird-lifter PRIVATE
+	"src/"
+)
 
 if(NOT TARGET LLVM-Wrapper)
-	message(FATAL_ERROR "Target \"LLVM-Wrapper\" referenced by \"remill-example\" does not exist!")
+	message(FATAL_ERROR "Target \"LLVM-Wrapper\" referenced by \"warbird-lifter\" does not exist!")
 endif()
 
 if(NOT TARGET remill)
-	message(FATAL_ERROR "Target \"remill\" referenced by \"remill-example\" does not exist!")
+	message(FATAL_ERROR "Target \"remill\" referenced by \"warbird-lifter\" does not exist!")
 endif()
 
-target_link_libraries(remill-example PRIVATE
+target_link_libraries(warbird-lifter PRIVATE
 	LLVM-Wrapper
 	remill
+	fmt
 )
 
 get_directory_property(CMKR_VS_STARTUP_PROJECT DIRECTORY ${PROJECT_SOURCE_DIR} DEFINITION VS_STARTUP_PROJECT)
 if(NOT CMKR_VS_STARTUP_PROJECT)
-	set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT remill-example)
+	set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT warbird-lifter)
 endif()

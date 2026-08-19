@@ -2,7 +2,7 @@ include_guard()
 
 # Change these defaults to point to your infrastructure if desired
 set(CMKR_REPO "https://github.com/build-cpp/cmkr" CACHE STRING "cmkr git repository" FORCE)
-set(CMKR_TAG "v0.2.44" CACHE STRING "cmkr git tag (this needs to be available forever)" FORCE)
+set(CMKR_TAG "v0.2.45" CACHE STRING "cmkr git tag (this needs to be available forever)" FORCE)
 set(CMKR_COMMIT_HASH "" CACHE STRING "cmkr git commit hash (optional)" FORCE)
 
 # To bootstrap/generate a cmkr project: cmake -P cmkr.cmake
@@ -61,6 +61,13 @@ endif()
 if(DEFINED ENV{CMKR_CACHE})
     set(CMKR_DIRECTORY_PREFIX "$ENV{CMKR_CACHE}")
     string(REPLACE "\\" "/" CMKR_DIRECTORY_PREFIX "${CMKR_DIRECTORY_PREFIX}")
+    if(CMKR_DIRECTORY_PREFIX MATCHES "^~")
+        if(WIN32)
+            string(REGEX REPLACE "^~" "$ENV{USERPROFILE}" CMKR_DIRECTORY_PREFIX "${CMKR_DIRECTORY_PREFIX}")
+        elseif(UNIX) 
+            string(REGEX REPLACE "^~" "$ENV{HOME}" CMKR_DIRECTORY_PREFIX "${CMKR_DIRECTORY_PREFIX}")
+        endif()
+    endif()
     if(NOT CMKR_DIRECTORY_PREFIX MATCHES "\\/$")
         set(CMKR_DIRECTORY_PREFIX "${CMKR_DIRECTORY_PREFIX}/")
     endif()
