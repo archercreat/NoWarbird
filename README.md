@@ -1,6 +1,6 @@
 # NoWarbird - Warbird devirtualization attempt
 
-NoWarbird is a devirtualization project inspired by https://github.com/airbus-seclab/warbirdvm. The main goal of this project was to see how devirtualized binary would look like as well as to learn [REMILL](https://github.com/lifting-bits/remill).
+NoWarbird is a devirtualization project inspired by https://github.com/airbus-seclab/warbirdvm. The main goal of this project was to see how devirtualized binary would look like as well as to learn [REMILL](https://github.com/lifting-bits/remill). Warbird VM usually holds heavily obfuscated whitebox AES-128-ECB implementation, which is why recompiled functions are more than 10KB in size.
 
 The devirtualization idea is simple:
 - Lift each handler into separate LLVM function
@@ -8,6 +8,17 @@ The devirtualization idea is simple:
 - Find next handler to explore
 - Repeat until no new handlers found
 - Build final LLVM function by chaining calls to handler functions
+
+### VM entry
+
+![](media/vmenter.png)
+
+VM takes the `key` and 4 arguments (clipsp takes 5), fills context with initial state and uses lower bytes of `key` argument as an index inside handlers array. 
+Each handler takes `context` and `key` and returns updated `key` value. VM executes until `key != 0`.
+
+The handlers are usually linear, but some of them call subfunction which shuffle VM context. Some of them call NT functions like `AllocatePool`. Some of them can return multiple values (conditional handlers). In general, a handler looks like this:
+
+![](media/handler.png)
 
 ## Results
 
@@ -52,3 +63,11 @@ VMs `0x36C23CED3AE0067F` and `0x54FBDBC57D84C904` only decrypt 1st argument into
 
 I think something broken with my tool because there's an infinite loop (had no time to look into it):
 ![](media/peauth-0x71230978383912F6-2.png)
+
+---
+
+More results can be found inside `results/` folder. To compile LLVM bitcode use:
+
+```
+clang -O3 -c -mno-sse .\file.ll
+```
