@@ -8,5 +8,4 @@ CMakeLists.txt.user
 .cache/
 
 # LLVM
-*.ll
 *.bc
