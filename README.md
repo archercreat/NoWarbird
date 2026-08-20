@@ -1,4 +1,4 @@
-# NoWarbird - Warbird devirtualization attempt
+# NoWarbird - Warbird devirtualization PoC
 
 NoWarbird is a devirtualization project inspired by https://github.com/airbus-seclab/warbirdvm. The main goal of this project was to see how devirtualized binary would look like as well as to learn [REMILL](https://github.com/lifting-bits/remill). Warbird VM usually holds heavily obfuscated whitebox AES-128-ECB implementation, which is why recompiled functions are more than 10KB in size.
 
